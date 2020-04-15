@@ -26,8 +26,8 @@ jobs:
     - name: Set up rust
       run: curl https://sh.rustup.rs -sSf | sh -s -- -y
 
-    - name: Install pipenv
-      run: brew install pipenv && pip install pipenv
+    - name: Install pipenv and intltool
+      run: brew install pipenv && pip install pipenv && brew install intltool
 
     - name: Setup JHBuild
       continue-on-error: true
