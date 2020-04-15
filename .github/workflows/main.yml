@@ -26,10 +26,10 @@ jobs:
     - name: Set up rust
       run: curl https://sh.rustup.rs -sSf | sh -s -- -y
 
-    - name: Setup Python3
+    - name: Setup JHBuild
       run: |
-        cd $HOME
-        mkdir -p ~/.config && mv ~/project/jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
+        ls
+        mkdir -p ~/.config && mv ./jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
         curl  https://gitlab.gnome.org/samm-git/gtk-osx/raw/gimp/gtk-osx-setup.sh > gtk-osx-setup.sh
         chmod +x gtk-osx-setup.sh
         echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
