@@ -26,7 +26,7 @@ jobs:
     - name: Set up rust
       run: curl https://sh.rustup.rs -sSf | sh -s -- -y
 
-    - name: install pipenv
+    - name: Install pipenv
       run: brew install pipenv && pip install pipenv
 
     - name: Setup JHBuild
@@ -44,24 +44,24 @@ jobs:
         cat ~/.profile
         
     - name: Setup gtk-mac-bundler
+      continue-on-error: true
       run: |
         cd ~/Source
         git clone https://github.com/samm-git/gtk-mac-bundler -b fix-otool
         cd gtk-mac-bundler
         make install
-        $HOME/.new_local/bin/jhbuild sysdeps --install meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
+        jhbuild sysdeps --install meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
+
+    - name: Install meson
+      continue-on-error: true
+      run: brew install meson
         
     - name: Bootstrap
+      continue-on-error: true
       run: source ~/.profile && jhbuild build meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
 
     - name: Build GIMP dependencies (without gegl/babl)
       run: source ~/.profile && jhbuild build suitesparse $(jhbuild info gimp|grep '^Requires:'|sed -e 's|^Requires:||' -e 's|gegl||'|tr -d ',')
-
-    - name: Build all WebKit dependencies
-      run: source ~/.profile && jhbuild build $(jhbuild info webkit|grep '^Requires:'|sed 's|^Requires:||'|tr -d ',')
-
-    - name: Build WebKit v1
-      run: source ~/.profile && jhbuild build webkit
 
     - name: Build and test babl/gegl
       run: source ~/.profile && jhbuild build --check babl gegl
