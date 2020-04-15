@@ -27,7 +27,7 @@ jobs:
       run: curl https://sh.rustup.rs -sSf | sh -s -- -y
 
     - name: Install pipenv and intltool
-      run: brew install pipenv && pip install pipenv && brew install intltool
+      run: brew install pipenv && pip install pipenv && brew install intltool && brew install libnettle
 
     - name: Setup JHBuild
       continue-on-error: true
