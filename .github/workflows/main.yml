@@ -19,6 +19,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      continue-on-error: true
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v1
@@ -28,7 +29,6 @@ jobs:
 
     - name: install pipenv
       run: brew install pipenv && pip install pipenv
-      if: succeeded() || failed()
 
     - name: Setup JHBuild
       run: |
@@ -42,7 +42,6 @@ jobs:
         PIPENV_YES=1 ./gtk-osx-setup.sh
         $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
         cat ~/.profile
-      if: succeeded() || failed()
         
     - name: Setup gtk-mac-bundler
       run: |
@@ -50,32 +49,24 @@ jobs:
         git clone https://github.com/samm-git/gtk-mac-bundler -b fix-otool
         cd gtk-mac-bundler
         make install
-      if: succeeded() || failed()
         
     - name: Bootstrap
       run: source ~/.profile && jhbuild build meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
-      if: succeeded() || failed()
 
     - name: Build GIMP dependencies (without gegl/babl)
       run: source ~/.profile && jhbuild build suitesparse $(jhbuild info gimp|grep '^Requires:'|sed -e 's|^Requires:||' -e 's|gegl||'|tr -d ',')
-      if: succeeded() || failed()
 
     - name: Build all WebKit dependencies
       run: source ~/.profile && jhbuild build $(jhbuild info webkit|grep '^Requires:'|sed 's|^Requires:||'|tr -d ',')
-      if: succeeded() || failed()
 
     - name: Build WebKit v1
       run: source ~/.profile && jhbuild build webkit
-      if: succeeded() || failed()
 
     - name: Build and test babl/gegl
       run: source ~/.profile && jhbuild build --check babl gegl
-      if: succeeded() || failed()
 
     - name: Build GIMP
       run: source ~/.profile && jhbuild build --check babl gegl
-      if: succeeded() || failed()
 
     - name: Building GIMP help (en) from git
       run: source ~/.profile && ALL_LINGUAS=en jhbuild build gimp-help-git
-      if: succeeded() || failed()
