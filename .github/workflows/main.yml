@@ -1,0 +1,68 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: macos-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+
+    - name: Set up rust
+      run: curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+    - name: Setup Python3
+      run: |
+        cd $HOME
+        mkdir -p ~/.config && mv ~/project/jhbuildrc-gtk-osx-gimp ~/.config/jhbuildrc-custom
+        curl  https://gitlab.gnome.org/samm-git/gtk-osx/raw/gimp/gtk-osx-setup.sh > gtk-osx-setup.sh
+        chmod +x gtk-osx-setup.sh
+        echo 'export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH:$HOME/.new_local/bin"' >> ~/.profile
+        echo 'export ARCHFLAGS="-arch x86_64"' >> ~/.profile
+        source ~/.profile
+        PIPENV_YES=1 ./gtk-osx-setup.sh
+        $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
+        cat ~/.profile
+        
+    - name: Setup gtk-mac-bundler
+      run: |
+        cd ~/Source
+        git clone https://github.com/samm-git/gtk-mac-bundler -b fix-otool
+        cd gtk-mac-bundler
+        make install
+        
+    - name: Bootstrap
+      run: source ~/.profile && jhbuild build meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
+
+    - name: Build GIMP dependencies (without gegl/babl)
+      run: source ~/.profile && jhbuild build suitesparse $(jhbuild info gimp|grep '^Requires:'|sed -e 's|^Requires:||' -e 's|gegl||'|tr -d ',')
+
+    - name: Build all WebKit dependencies
+      run: source ~/.profile && jhbuild build $(jhbuild info webkit|grep '^Requires:'|sed 's|^Requires:||'|tr -d ',')
+
+    - name: Build WebKit v1
+      run: source ~/.profile && jhbuild build webkit
+
+    - name: Build and test babl/gegl
+      run: source ~/.profile && jhbuild build --check babl gegl
+
+    - name: Build GIMP
+      run: source ~/.profile && jhbuild build --check babl gegl
+
+    - name: Building GIMP help (en) from git
+      run: source ~/.profile && ALL_LINGUAS=en jhbuild build gimp-help-git
