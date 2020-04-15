@@ -49,6 +49,7 @@ jobs:
         git clone https://github.com/samm-git/gtk-mac-bundler -b fix-otool
         cd gtk-mac-bundler
         make install
+        $HOME/.new_local/bin/jhbuild sysdeps --install meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
         
     - name: Bootstrap
       run: source ~/.profile && jhbuild build meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
