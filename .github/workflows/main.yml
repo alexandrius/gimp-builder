@@ -41,6 +41,7 @@ jobs:
         PIPENV_YES=1 ./gtk-osx-setup.sh
         $HOME/.new_local/bin/jhbuild bootstrap-gtk-osx-gimp
         cat ~/.profile
+      continue-on-error: true
         
     - name: Setup gtk-mac-bundler
       run: |
@@ -48,6 +49,7 @@ jobs:
         git clone https://github.com/samm-git/gtk-mac-bundler -b fix-otool
         cd gtk-mac-bundler
         make install
+      continue-on-error: true
         
     - name: Bootstrap
       run: source ~/.profile && jhbuild build meta-gtk-osx-freetype meta-gtk-osx-bootstrap meta-gtk-osx-core
@@ -69,5 +71,3 @@ jobs:
 
     - name: Building GIMP help (en) from git
       run: source ~/.profile && ALL_LINGUAS=en jhbuild build gimp-help-git
-
-      continue-on-error: true
