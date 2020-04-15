@@ -19,7 +19,6 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      continue-on-error: true
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v1
@@ -70,3 +69,5 @@ jobs:
 
     - name: Building GIMP help (en) from git
       run: source ~/.profile && ALL_LINGUAS=en jhbuild build gimp-help-git
+
+      continue-on-error: true
