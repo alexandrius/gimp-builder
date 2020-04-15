@@ -26,6 +26,9 @@ jobs:
     - name: Set up rust
       run: curl https://sh.rustup.rs -sSf | sh -s -- -y
 
+    - name: install pipenv
+      run: brew install pipenv
+
     - name: Setup JHBuild
       run: |
         ls
